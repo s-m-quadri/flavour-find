@@ -124,7 +124,7 @@ class _HomeState extends State<Home> {
           ),
           Expanded(
             child: activateLoader
-                ? const CircularProgressIndicator()
+                ? const Center(child: CircularProgressIndicator())
                 : ListView.builder(
                     itemCount: widget.dataModel.recipes.length,
                     itemBuilder: (context, index) {
