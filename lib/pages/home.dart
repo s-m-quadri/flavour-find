@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:myapp/data/model.dart';
 import 'package:myapp/data/structure.dart';
+import 'package:myapp/pages/recipe.dart';
 
 class Home extends StatefulWidget {
   const Home({
@@ -74,6 +75,8 @@ class _HomeState extends State<Home> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        leading: const Icon(Icons.soup_kitchen_outlined,
+            color: Colors.green, size: 32),
         title: Text(widget.title),
       ),
       body: Column(
@@ -115,9 +118,23 @@ class _HomeState extends State<Home> {
               itemBuilder: (context, index) {
                 return Offstage(
                   key: ValueKey(widget.dataModel.recipes[index].id),
-                  offstage: !((categoryFilterSelected == "All" || categoryFilterSelected.contains(widget.dataModel.recipes[index].category)) && ingredientsFilter.every((key) => widget.dataModel.recipes[index].ingredient.containsKey(key))),
+                  offstage: !((categoryFilterSelected == "All" ||
+                          categoryFilterSelected.contains(
+                              widget.dataModel.recipes[index].category)) &&
+                      ingredientsFilter.every((key) => widget
+                          .dataModel.recipes[index].ingredient
+                          .containsKey(key))),
                   child: InkWell(
-                    onTap: () {},
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => RecipeDetails(
+                            recipe: widget.dataModel.recipes[index],
+                          ),
+                        ),
+                      );
+                    },
                     child: Padding(
                       padding: const EdgeInsets.all(10),
                       child: Row(

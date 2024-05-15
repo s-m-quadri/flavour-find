@@ -8,7 +8,7 @@ void main() {
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
-  final String title = "Flavor Find";
+  final String title = "Flavour Find";
 
   @override
   Widget build(BuildContext context) {

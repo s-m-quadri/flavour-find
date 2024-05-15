@@ -1,5 +1,5 @@
 name: myapp
-description: "A new Flutter project."
+description: "Flavour Find Applciation."
 # The following line prevents the package from being accidentally published to
 # pub.dev using `flutter pub publish`. This is preferred for private packages.
 publish_to: 'none' # Remove this line if you wish to publish to pub.dev
@@ -37,6 +37,7 @@ dependencies:
   cupertino_icons: ^1.0.6
   http: ^1.2.1
   dart_casing: ^3.0.1
+  youtube_player_flutter: ^9.0.1
 
 dev_dependencies:
   flutter_test:
