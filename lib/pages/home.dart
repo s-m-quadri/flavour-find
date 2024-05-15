@@ -51,7 +51,7 @@ class _HomeState extends State<Home> {
       await widget.dataModel.loadLikedIds();
       updateStatus("Success");
     } catch (e) {
-      updateStatus(e.toString());
+      updateStatus("Network Error, Something Went Wrong!");
     }
     setState(() {
       activateLoader = false;
