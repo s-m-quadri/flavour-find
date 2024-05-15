@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:dart_casing/dart_casing.dart';
 import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:myapp/data/structure.dart';
 
 class DataModel {
@@ -10,6 +11,26 @@ class DataModel {
   List<Ingredient> ingredients = [];
   List<String> categories = [];
   List<Recipe> recipes = [];
+  List<String> likedIds = [];
+
+  Future<void> loadLikedIds() async {
+    SharedPreferences pref = await SharedPreferences.getInstance();
+    likedIds = pref.getStringList("likedIds") ?? [];
+  }
+
+  Future<void> addLikedId(String id) async {
+    await loadLikedIds();
+    likedIds.add(id);
+    SharedPreferences pref = await SharedPreferences.getInstance();
+    pref.setStringList("likedIds", likedIds);
+  }
+
+  Future<void> removeLikedId(String id) async {
+    await loadLikedIds();
+    likedIds.remove(id);
+    SharedPreferences pref = await SharedPreferences.getInstance();
+    pref.setStringList("likedIds", likedIds);
+  }
 
   Future<void> fetchIngredients() async {
     try {
@@ -40,7 +61,8 @@ class DataModel {
         final data = jsonDecode(response.body);
         categories.clear();
         categories = (data["meals"] as List)
-            .map<String>((item) => Casing.titleCase(item["strCategory"] as String))
+            .map<String>(
+                (item) => Casing.titleCase(item["strCategory"] as String))
             .toList();
         return;
       } else {
@@ -94,7 +116,9 @@ class DataModel {
                   item["strMeasure$i"] != "" &&
                   item["strIngredient$i"] != null &&
                   item["strIngredient$i"] != "") {
-                itoMeasure[Casing.titleCase(item["strIngredient$i"] as String)] = item["strMeasure$i"];
+                itoMeasure[
+                        Casing.titleCase(item["strIngredient$i"] as String)] =
+                    item["strMeasure$i"];
               }
             }
             Recipe newRecipe = Recipe(
@@ -127,21 +151,20 @@ class DataModel {
     String categoryFilterSelected = "All",
   }) {
     if (categoryFilterSelected == "All") return recipes;
-    return recipes
-        .where(
-          (item) {
-            bool cond1 = item.category.toLowerCase() == categoryFilterSelected.toLowerCase();
-            if (ingredientsFilter.isEmpty) return cond1;
-            bool cond2 = true;
-            for (var ingr in item.ingredient.keys) {
-              if (!ingredientsFilter.contains(ingr)) {
-                cond2 = false;
-                break;
-              }
-            }
-            return cond1 && cond2;
-          },
-        )
-        .toList();
+    return recipes.where(
+      (item) {
+        bool cond1 =
+            item.category.toLowerCase() == categoryFilterSelected.toLowerCase();
+        if (ingredientsFilter.isEmpty) return cond1;
+        bool cond2 = true;
+        for (var ingr in item.ingredient.keys) {
+          if (!ingredientsFilter.contains(ingr)) {
+            cond2 = false;
+            break;
+          }
+        }
+        return cond1 && cond2;
+      },
+    ).toList();
   }
 }

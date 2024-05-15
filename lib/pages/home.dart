@@ -40,10 +40,15 @@ class _HomeState extends State<Home> {
       });
       await widget.dataModel.fetchIngredients();
       await widget.dataModel.fetchCategories();
-      categoryFilter = ["All", ...widget.dataModel.categories.reversed];
+      categoryFilter = [
+        "Favorite",
+        "All",
+        ...widget.dataModel.categories.reversed
+      ];
       categoryFilter.remove("Beef");
       categoryFilter.remove("Pork");
       await widget.dataModel.fetchRecipes();
+      await widget.dataModel.loadLikedIds();
       updateStatus("Success");
     } catch (e) {
       updateStatus(e.toString());
@@ -128,14 +133,28 @@ class _HomeState extends State<Home> {
                 : ListView.builder(
                     itemCount: widget.dataModel.recipes.length,
                     itemBuilder: (context, index) {
+                      bool categoryCondition = true;
+                      switch (categoryFilterSelected) {
+                        case "All":
+                          categoryCondition = true;
+                          break;
+                        case "Favorite":
+                          categoryCondition = widget.dataModel.likedIds.contains(
+                              widget.dataModel.recipes[index].id.toString());
+                          break;
+                        default:
+                          categoryCondition = categoryFilterSelected.contains(
+                              widget.dataModel.recipes[index].category);
+                          break;
+                      }
+                      bool ingredientCondition = ingredientsFilter.every(
+                          (key) => widget.dataModel.recipes[index].ingredient
+                              .containsKey(key));
+                      bool show = categoryCondition && ingredientCondition;
+
                       return Offstage(
                         key: ValueKey(widget.dataModel.recipes[index].id),
-                        offstage: !((categoryFilterSelected == "All" ||
-                                categoryFilterSelected.contains(widget
-                                    .dataModel.recipes[index].category)) &&
-                            ingredientsFilter.every((key) => widget
-                                .dataModel.recipes[index].ingredient
-                                .containsKey(key))),
+                        offstage: !show,
                         child: InkWell(
                           onTap: () {
                             Navigator.push(
@@ -143,6 +162,7 @@ class _HomeState extends State<Home> {
                               MaterialPageRoute(
                                 builder: (context) => RecipeDetails(
                                   recipe: widget.dataModel.recipes[index],
+                                  dataModel: widget.dataModel,
                                 ),
                               ),
                             );
@@ -270,6 +290,8 @@ class CategoryFilters extends StatelessWidget {
 
   Widget? getFilterIcon(String filter) {
     switch (filter) {
+      case "Favorite":
+        return const Icon(Icons.favorite_outline);
       case "All":
         return const Icon(Icons.apps_outlined);
       case "Vegetarian":

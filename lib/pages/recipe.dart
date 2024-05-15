@@ -1,5 +1,6 @@
 import 'package:dart_casing/dart_casing.dart';
 import 'package:flutter/material.dart';
+import 'package:myapp/data/model.dart';
 import 'package:myapp/data/structure.dart';
 import 'package:youtube_player_flutter/youtube_player_flutter.dart';
 
@@ -7,9 +8,11 @@ class RecipeDetails extends StatefulWidget {
   const RecipeDetails({
     super.key,
     required this.recipe,
+    required this.dataModel,
   });
 
   final Recipe recipe;
+  final DataModel dataModel;
 
   @override
   State<RecipeDetails> createState() => _RecipeDetailsState();
@@ -55,7 +58,29 @@ class _RecipeDetailsState extends State<RecipeDetails> {
             ),
           ),
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 10),
+            padding: const EdgeInsets.only(top: 20),
+            child: ListTile(
+              title: Center(
+                child: ChoiceChip(
+                  label: const Text("Mark Favorite"),
+                  selected: widget.dataModel.likedIds
+                      .contains(widget.recipe.id.toString()),
+                  showCheckmark: false,
+                  avatar: const Icon(Icons.favorite_outline),
+                  onSelected: (value) {
+                    value
+                        ? widget.dataModel
+                            .addLikedId(widget.recipe.id.toString())
+                        : widget.dataModel
+                            .removeLikedId(widget.recipe.id.toString());
+                    setState(() {});
+                  },
+                ),
+              ),
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.only(left: 30, right: 30, bottom: 10),
             child: ListTile(
               title: Center(
                 child: Text(
