@@ -16,13 +16,11 @@ class RecipeDetails extends StatefulWidget {
 }
 
 class _RecipeDetailsState extends State<RecipeDetails> {
-
-      
-
   @override
   Widget build(BuildContext context) {
-    final YoutubePlayerController controller =
-      YoutubePlayerController(initialVideoId: YoutubePlayer.convertUrlToId(widget.recipe.youtubeURL) ?? "");
+    final YoutubePlayerController controller = YoutubePlayerController(
+        initialVideoId:
+            YoutubePlayer.convertUrlToId(widget.recipe.youtubeURL) ?? "");
 
     return Scaffold(
       appBar: AppBar(
@@ -30,6 +28,18 @@ class _RecipeDetailsState extends State<RecipeDetails> {
       ),
       body: ListView(
         children: [
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 10),
+            child: ListTile(
+              title: Center(
+                child: Text(
+                  Casing.titleCase(widget.recipe.name),
+                  style: Theme.of(context).textTheme.headlineLarge,
+                  textAlign: TextAlign.center,
+                ),
+              ),
+            ),
+          ),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 30),
             child: SizedBox(
@@ -49,12 +59,45 @@ class _RecipeDetailsState extends State<RecipeDetails> {
             child: ListTile(
               title: Center(
                 child: Text(
-                  Casing.titleCase(widget.recipe.name),
-                  style: Theme.of(context).textTheme.headlineLarge,
+                  Casing.titleCase(
+                      "${widget.recipe.category} | ${widget.recipe.tag}"),
                   textAlign: TextAlign.center,
                 ),
               ),
             ),
+          ),
+          YoutubePlayer(
+            controller: controller,
+            aspectRatio: 16 / 9,
+          ),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 10),
+            child: ListTile(
+              title: Center(
+                child: Text(
+                  Casing.titleCase("Ingredients"),
+                  style: Theme.of(context).textTheme.headlineMedium,
+                  textAlign: TextAlign.center,
+                ),
+              ),
+            ),
+          ),
+          ...List.generate(
+            widget.recipe.ingredient.length,
+            (index) {
+              String ingItem = widget.recipe.ingredient.keys.toList()[index];
+              return Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 30),
+                child: ListTile(
+                  dense: true,
+                  visualDensity: VisualDensity.compact,
+                  leading: const Icon(Icons.check_outlined),
+                  title: Text(Casing.titleCase(ingItem)),
+                  trailing: Text(
+                      Casing.titleCase(widget.recipe.ingredient[ingItem]!)),
+                ),
+              );
+            },
           ),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 10),
@@ -78,10 +121,6 @@ class _RecipeDetailsState extends State<RecipeDetails> {
                 ),
               ),
             ),
-          ),
-          YoutubePlayer(
-            controller: controller,
-            aspectRatio: 16 / 9,
           ),
         ],
       ),

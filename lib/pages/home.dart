@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:myapp/data/model.dart';
-import 'package:myapp/data/structure.dart';
 import 'package:myapp/pages/recipe.dart';
 
 class Home extends StatefulWidget {
@@ -22,7 +21,7 @@ class _HomeState extends State<Home> {
   String categoryFilterSelected = "All";
   List<String> categoryFilter = ["All"];
   List<String> ingredientsFilter = [];
-  List<Recipe> recipts = [];
+  bool activateLoader = false;
 
   void handleRemoveIngredient(String item) {
     ingredientsFilter.remove(item);
@@ -36,6 +35,9 @@ class _HomeState extends State<Home> {
 
   void loadEssentials() async {
     try {
+      setState(() {
+        activateLoader = true;
+      });
       await widget.dataModel.fetchIngredients();
       await widget.dataModel.fetchCategories();
       categoryFilter = ["All", ...widget.dataModel.categories.reversed];
@@ -46,7 +48,9 @@ class _HomeState extends State<Home> {
     } catch (e) {
       updateStatus(e.toString());
     }
-    setState(() {});
+    setState(() {
+      activateLoader = false;
+    });
   }
 
   void updateStatus(String message) {
@@ -78,6 +82,13 @@ class _HomeState extends State<Home> {
         leading: const Icon(Icons.soup_kitchen_outlined,
             color: Colors.green, size: 32),
         title: Text(widget.title),
+        actions: [
+          ActionChip(
+            label: const Text("Refresh"),
+            avatar: const Icon(Icons.refresh_outlined),
+            onPressed: () => loadEssentials(),
+          ),
+        ],
       ),
       body: Column(
         children: [
@@ -85,7 +96,6 @@ class _HomeState extends State<Home> {
             padding: const EdgeInsets.all(15),
             child: Autocomplete<String>(
               onSelected: (String item) {
-                updateStatus("Added $item");
                 handleAddIngredient(item);
                 searchController.clear();
               },
@@ -113,56 +123,59 @@ class _HomeState extends State<Home> {
             handleFilterSelect: handleFilterSelect,
           ),
           Expanded(
-            child: ListView.builder(
-              itemCount: widget.dataModel.recipes.length,
-              itemBuilder: (context, index) {
-                return Offstage(
-                  key: ValueKey(widget.dataModel.recipes[index].id),
-                  offstage: !((categoryFilterSelected == "All" ||
-                          categoryFilterSelected.contains(
-                              widget.dataModel.recipes[index].category)) &&
-                      ingredientsFilter.every((key) => widget
-                          .dataModel.recipes[index].ingredient
-                          .containsKey(key))),
-                  child: InkWell(
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => RecipeDetails(
-                            recipe: widget.dataModel.recipes[index],
+            child: activateLoader
+                ? const CircularProgressIndicator()
+                : ListView.builder(
+                    itemCount: widget.dataModel.recipes.length,
+                    itemBuilder: (context, index) {
+                      return Offstage(
+                        key: ValueKey(widget.dataModel.recipes[index].id),
+                        offstage: !((categoryFilterSelected == "All" ||
+                                categoryFilterSelected.contains(widget
+                                    .dataModel.recipes[index].category)) &&
+                            ingredientsFilter.every((key) => widget
+                                .dataModel.recipes[index].ingredient
+                                .containsKey(key))),
+                        child: InkWell(
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => RecipeDetails(
+                                  recipe: widget.dataModel.recipes[index],
+                                ),
+                              ),
+                            );
+                          },
+                          child: Padding(
+                            padding: const EdgeInsets.all(10),
+                            child: Row(
+                              children: [
+                                ClipRRect(
+                                  borderRadius: BorderRadius.circular(10),
+                                  child: Image.network(
+                                    widget.dataModel.recipes[index].thumbURL,
+                                    width: 100,
+                                    height: 100,
+                                  ),
+                                ),
+                                Expanded(
+                                  child: ListTile(
+                                    title: Text(
+                                        widget.dataModel.recipes[index].name),
+                                    subtitle: Text(
+                                        "A type of ${widget.dataModel.recipes[index].category}, having ingredients: ${widget.dataModel.recipes[index].ingredientStrList()}."),
+                                    trailing: const Icon(
+                                        Icons.arrow_forward_ios_outlined),
+                                  ),
+                                ),
+                              ],
+                            ),
                           ),
                         ),
                       );
                     },
-                    child: Padding(
-                      padding: const EdgeInsets.all(10),
-                      child: Row(
-                        children: [
-                          ClipRRect(
-                            borderRadius: BorderRadius.circular(10),
-                            child: Image.network(
-                              widget.dataModel.recipes[index].thumbURL,
-                              width: 100,
-                              height: 100,
-                            ),
-                          ),
-                          Expanded(
-                            child: ListTile(
-                              title: Text(widget.dataModel.recipes[index].name),
-                              subtitle: Text(
-                                  "A type of ${widget.dataModel.recipes[index].category}, having ingredients: ${widget.dataModel.recipes[index].ingredientStrList()}."),
-                              trailing:
-                                  const Icon(Icons.arrow_forward_ios_outlined),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
                   ),
-                );
-              },
-            ),
           ),
         ],
       ),
