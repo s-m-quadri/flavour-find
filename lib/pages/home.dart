@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:myapp/data/model.dart';
-import 'package:myapp/pages/recipe.dart';
+import '../data/model.dart';
+import 'recipe.dart';
 
 class Home extends StatefulWidget {
   const Home({

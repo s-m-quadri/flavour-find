@@ -1,8 +1,8 @@
-import 'package:dart_casing/dart_casing.dart';
 import 'package:flutter/material.dart';
-import 'package:myapp/data/model.dart';
-import 'package:myapp/data/structure.dart';
+import 'package:dart_casing/dart_casing.dart';
 import 'package:youtube_player_flutter/youtube_player_flutter.dart';
+import '../data/model.dart';
+import '../data/structure.dart';
 
 class RecipeDetails extends StatefulWidget {
   const RecipeDetails({

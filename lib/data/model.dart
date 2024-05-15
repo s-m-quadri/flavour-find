@@ -3,7 +3,7 @@ import 'dart:convert';
 import 'package:dart_casing/dart_casing.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:myapp/data/structure.dart';
+import 'structure.dart';
 
 class DataModel {
   String baseUrl = "https://www.themealdb.com/api/json/v1/1";
