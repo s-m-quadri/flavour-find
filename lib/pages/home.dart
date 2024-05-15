@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:myapp/data/model.dart';
+import 'package:myapp/data/structure.dart';
 
 class Home extends StatefulWidget {
   const Home({
@@ -17,17 +18,18 @@ class Home extends StatefulWidget {
 
 class _HomeState extends State<Home> {
   TextEditingController searchController = TextEditingController();
-  String filterSelected = "All";
-  List<String> filter = ["All"];
-  List<String> ingredients = [];
+  String categoryFilterSelected = "All";
+  List<String> categoryFilter = ["All"];
+  List<String> ingredientsFilter = [];
+  List<Recipe> recipts = [];
 
   void handleRemoveIngredient(String item) {
-    ingredients.remove(item);
+    ingredientsFilter.remove(item);
     setState(() {});
   }
 
   void handleAddIngredient(String item) {
-    if (!ingredients.contains("iten")) ingredients.add(item);
+    if (!ingredientsFilter.contains(item)) ingredientsFilter.add(item);
     setState(() {});
   }
 
@@ -35,9 +37,9 @@ class _HomeState extends State<Home> {
     try {
       await widget.dataModel.fetchIngredients();
       await widget.dataModel.fetchCategories();
-      filter = ["All", ...widget.dataModel.categories.reversed];
-      filter.remove("Beef");
-      filter.remove("Pork");
+      categoryFilter = ["All", ...widget.dataModel.categories.reversed];
+      categoryFilter.remove("Beef");
+      categoryFilter.remove("Pork");
       await widget.dataModel.fetchRecipes();
       updateStatus("Success");
     } catch (e) {
@@ -53,8 +55,8 @@ class _HomeState extends State<Home> {
   }
 
   void handleFilterSelect(int index) {
-    filterSelected = filter[index];
-    switch (filter[index]) {
+    categoryFilterSelected = categoryFilter[index];
+    switch (categoryFilter[index]) {
       case "All":
         break;
       default:
@@ -99,26 +101,48 @@ class _HomeState extends State<Home> {
             ),
           ),
           AddedIngredient(
-            ingredients: ingredients,
+            ingredients: ingredientsFilter,
             handleRemove: handleRemoveIngredient,
           ),
           CategoryFilters(
-            filter: filter,
-            filterSelected: filterSelected,
+            filter: categoryFilter,
+            filterSelected: categoryFilterSelected,
             handleFilterSelect: handleFilterSelect,
           ),
           Expanded(
             child: ListView.builder(
               itemCount: widget.dataModel.recipes.length,
               itemBuilder: (context, index) {
-                return ListTile(
-                  title: Text(widget.dataModel.recipes[index].name),
-                  leading: Image.network(
-                    widget.dataModel.recipes[index].thumbURL,
-                    height: double.infinity,
+                return Offstage(
+                  key: ValueKey(widget.dataModel.recipes[index].id),
+                  offstage: !((categoryFilterSelected == "All" || categoryFilterSelected.contains(widget.dataModel.recipes[index].category)) && ingredientsFilter.every((key) => widget.dataModel.recipes[index].ingredient.containsKey(key))),
+                  child: InkWell(
+                    onTap: () {},
+                    child: Padding(
+                      padding: const EdgeInsets.all(10),
+                      child: Row(
+                        children: [
+                          ClipRRect(
+                            borderRadius: BorderRadius.circular(10),
+                            child: Image.network(
+                              widget.dataModel.recipes[index].thumbURL,
+                              width: 100,
+                              height: 100,
+                            ),
+                          ),
+                          Expanded(
+                            child: ListTile(
+                              title: Text(widget.dataModel.recipes[index].name),
+                              subtitle: Text(
+                                  "A type of ${widget.dataModel.recipes[index].category}, having ingredients: ${widget.dataModel.recipes[index].ingredientStrList()}."),
+                              trailing:
+                                  const Icon(Icons.arrow_forward_ios_outlined),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
                   ),
-                  subtitle: Text(
-                      "A type of ${widget.dataModel.recipes[index].category}, having ingredients: ${widget.dataModel.recipes[index].ingredientStrList()}."),
                 );
               },
             ),

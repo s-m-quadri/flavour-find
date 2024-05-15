@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:dart_casing/dart_casing.dart';
 import 'package:http/http.dart' as http;
 import 'package:myapp/data/structure.dart';
 
@@ -19,7 +20,7 @@ class DataModel {
         ingredients = (data["meals"] as List)
             .map<Ingredient>((item) => Ingredient(
                   id: int.parse(item["idIngredient"]),
-                  name: item["strIngredient"] ?? "Something",
+                  name: Casing.titleCase(item["strIngredient"] ?? "Something"),
                   details: item["strDescription"] ?? "No details available",
                 ))
             .toList();
@@ -39,7 +40,7 @@ class DataModel {
         final data = jsonDecode(response.body);
         categories.clear();
         categories = (data["meals"] as List)
-            .map<String>((item) => item["strCategory"])
+            .map<String>((item) => Casing.titleCase(item["strCategory"] as String))
             .toList();
         return;
       } else {
@@ -57,29 +58,29 @@ class DataModel {
         'a',
         'b',
         'c',
-        'd',
-        'e',
-        'f',
-        'g',
-        'h',
-        'i',
-        'j',
-        'k',
-        'l',
-        'm',
-        'n',
-        'o',
-        'p',
-        'q',
-        'r',
-        's',
-        't',
-        'u',
-        'v',
-        'w',
-        'x',
-        'y',
-        'z'
+        // 'd',
+        // 'e',
+        // 'f',
+        // 'g',
+        // 'h',
+        // 'i',
+        // 'j',
+        // 'k',
+        // 'l',
+        // 'm',
+        // 'n',
+        // 'o',
+        // 'p',
+        // 'q',
+        // 'r',
+        // 's',
+        // 't',
+        // 'u',
+        // 'v',
+        // 'w',
+        // 'x',
+        // 'y',
+        // 'z'
       ]) {
         final response =
             await client.get(Uri.parse("$baseUrl/search.php?f=$letter"));
@@ -93,7 +94,7 @@ class DataModel {
                   item["strMeasure$i"] != "" &&
                   item["strIngredient$i"] != null &&
                   item["strIngredient$i"] != "") {
-                itoMeasure[item["strIngredient$i"]] = item["strMeasure$i"];
+                itoMeasure[Casing.titleCase(item["strIngredient$i"] as String)] = item["strMeasure$i"];
               }
             }
             Recipe newRecipe = Recipe(
@@ -108,7 +109,7 @@ class DataModel {
               ingredient: itoMeasure,
             );
             newRecipe.name = newRecipe.name.toUpperCase();
-            
+
             return newRecipe;
           }).toList());
         } else {
@@ -119,5 +120,28 @@ class DataModel {
     } catch (error) {
       throw Exception(error);
     }
+  }
+
+  List<Recipe> getFilterRecipe({
+    required List<String> ingredientsFilter,
+    String categoryFilterSelected = "All",
+  }) {
+    if (categoryFilterSelected == "All") return recipes;
+    return recipes
+        .where(
+          (item) {
+            bool cond1 = item.category.toLowerCase() == categoryFilterSelected.toLowerCase();
+            if (ingredientsFilter.isEmpty) return cond1;
+            bool cond2 = true;
+            for (var ingr in item.ingredient.keys) {
+              if (!ingredientsFilter.contains(ingr)) {
+                cond2 = false;
+                break;
+              }
+            }
+            return cond1 && cond2;
+          },
+        )
+        .toList();
   }
 }
