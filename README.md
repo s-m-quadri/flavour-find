@@ -20,6 +20,7 @@ https://github.com/s-m-quadri/flavour-find/assets/88645248/33f4b0b2-5980-495d-b1
 
 - Head to [GitHub](https://github.com/s-m-quadri/flavour-find) for source and updates
 - Watch [introduction on YouTube](https://youtu.be/uhOIadTf83g) for abstract view
-- Visit [vercel deployement](https://flavour-find.vercel.app/), for live demo.
+- Get the `APK` file from latest release [v1.0.0](https://github.com/s-m-quadri/flavour-find/releases/tag/v1.1.0) for demo
+
 > [!WARNING]
-> Visit [vercel deployement](https://flavour-find.vercel.app/), for live demo. But currently it's not configured correctly. Will be in working condition soon.
+> Visit [vercel deployement](https://flavour-find.vercel.app/), for live demo. But currently it's not configured correctly. Will be in working condition soon. Instead test using [APK file from release section](https://github.com/s-m-quadri/flavour-find/releases/tag/v1.1.0).
