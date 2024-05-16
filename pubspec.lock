@@ -190,6 +190,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.13.1"
+  flutter_lints:
+    dependency: "direct main"
+    description:
+      name: flutter_lints
+      sha256: "3f41d009ba7172d5ff9be5f6e6e6abb4300e263aab8866d2a0842ed2a70f8f0c"
+      url: "https://pub.dev"
+    source: hosted
+    version: "4.0.0"
   flutter_test:
     dependency: "direct dev"
     description: flutter
@@ -264,6 +272,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "3.0.1"
+  lints:
+    dependency: transitive
+    description:
+      name: lints
+      sha256: "976c774dd944a42e83e2467f4cc670daef7eed6295b10b36ae8c85bcbf828235"
+      url: "https://pub.dev"
+    source: hosted
+    version: "4.0.0"
   matcher:
     dependency: transitive
     description:
@@ -272,6 +288,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.12.16+1"
+  material:
+    dependency: "direct main"
+    description:
+      name: material
+      sha256: "7f3a2edadf60e3a8771b843baff931d4b2e7205d015059c3abe315344f23dfa4"
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.0.0+2"
   material_color_utilities:
     dependency: transitive
     description:

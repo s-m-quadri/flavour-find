@@ -139,8 +139,9 @@ class _HomeState extends State<Home> {
                           categoryCondition = true;
                           break;
                         case "Favorite":
-                          categoryCondition = widget.dataModel.likedIds.contains(
-                              widget.dataModel.recipes[index].id.toString());
+                          categoryCondition = widget.dataModel.likedIds
+                              .contains(widget.dataModel.recipes[index].id
+                                  .toString());
                           break;
                         default:
                           categoryCondition = categoryFilterSelected.contains(
@@ -196,6 +197,18 @@ class _HomeState extends State<Home> {
                       );
                     },
                   ),
+          ),
+          activateLoader ? const ListTile(
+            dense: true,
+            visualDensity: VisualDensity.compact,
+            subtitle: Text(
+                "Loading..."),
+          ) :
+          const ListTile(
+            dense: true,
+            visualDensity: VisualDensity.compact,
+            subtitle: Text(
+                "Loading finished, if you haven't find what you need, try changing filters"),
           ),
         ],
       ),
